@@ -88,4 +88,4 @@ def process_images(url):
     return processed_image_filenames
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
