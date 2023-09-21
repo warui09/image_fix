@@ -5,14 +5,14 @@
 </head>
 <body>
     <h1>Fixed Images</h1>
-    <div>
-        {% for filename in fixed_image_filenames %}
-            <img src="{{ url_for('static', filename=filename) }}" alt="Image">
-        {% endfor %}
-    </div>
     <form method="POST">
         <input type="text" name="url" placeholder="Enter URL">
         <input type="submit" value="Process">
     </form>
+    <div>
+        {% for filename in processed_image_filenames %}
+            <img src="{{ url_for('static', filename=filename) }}" alt="Image">
+        {% endfor %}
+    </div>
 </body>
 </html>
