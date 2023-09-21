@@ -12,12 +12,13 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    processed_image_filenames = []  # List to store filenames of processed images
+
     if request.method == 'POST':
         url = request.form['url']
-        process_images(url)
-        return redirect(url_for('index'))
+        processed_image_filenames = process_images(url)
 
-    return render_template('index.html')
+    return render_template('index.html', processed_image_filenames=processed_image_filenames)
 
 def process_images(url):
     images = []
@@ -31,12 +32,15 @@ def process_images(url):
         'Accept-Encoding': 'gzip, deflate',
         'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8'
     }
-    
+
     cont = requests.get(url, headers=headers).content
     soup = BeautifulSoup(cont, 'html.parser')
     imgall = soup.find_all('img')
 
-    fixed_image_filenames = []  # List to store filenames of fixed images
+    processed_image_filenames = []  # List to store filenames of processed images
+
+    imgsdownloaded = 0
+    imgsnotdownloaded = 0
 
     for img in imgall:
         try:
@@ -53,9 +57,6 @@ def process_images(url):
                     except:
                         pass
         images.append(imgsrc)
-
-    imgsdownloaded = 0
-    imgsnotdownloaded = 0
 
     for image_url in images:
         if '.svg' in image_url:
@@ -76,16 +77,15 @@ def process_images(url):
                 # Perform inpainting to fix blemishes
                 inpainted_image = cv2.inpaint(img, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
 
-                # Save the fixed image to the 'fixed_images' folder
-                fixed_filename = f'fixed_images/image{imgsdownloaded}_fixed.png'
-                cv2.imwrite(fixed_filename, inpainted_image)
+                # Save the processed image to the 'fixed_images' folder
+                processed_filename = f'fixed_images/image{imgsdownloaded}_processed.png'
+                cv2.imwrite(processed_filename, inpainted_image)
 
-                # Add the fixed image filename to the list
-                fixed_image_filenames.append(fixed_filename)
+                # Add the processed image filename to the list
+                processed_image_filenames.append(processed_filename)
                 imgsdownloaded += 1
 
-    print(f'{imgsdownloaded} Images Downloaded and Fixed')
-    print(f'{imgsnotdownloaded} Failed to download')
+    return processed_image_filenames
 
 if __name__ == '__main__':
     app.run(debug=True)

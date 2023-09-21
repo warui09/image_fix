@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Downloader and Resizer</title>
+    <title>Image Display</title>
 </head>
 <body>
-    <h1>Image Downloader</h1>
-    <form method="POST" action="/">
-        <label for="url">Enter URL:</label>
-        <input type="text" name="url" id="url" required>
-        <button type="submit">Download</button>
+    <h1>Fixed Images</h1>
+    <div>
+        {% for filename in fixed_image_filenames %}
+            <img src="{{ url_for('static', filename=filename) }}" alt="Image">
+        {% endfor %}
+    </div>
+    <form method="POST">
+        <input type="text" name="url" placeholder="Enter URL">
+        <input type="submit" value="Process">
     </form>
 </body>
 </html>
